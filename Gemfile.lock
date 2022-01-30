@@ -66,10 +66,15 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    addressable (2.8.0)
+      public_suffix (>= 2.0.2, < 5.0)
     bootsnap (1.10.2)
       msgpack (~> 1.2)
     builder (3.2.4)
+    coderay (1.1.3)
     concurrent-ruby (1.1.9)
+    crack (0.4.5)
+      rexml
     crass (1.0.6)
     debug (1.4.0)
       irb (>= 1.3.6)
@@ -79,6 +84,7 @@ GEM
     erubi (1.10.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
+    hashdiff (1.0.1)
     i18n (1.9.1)
       concurrent-ruby (~> 1.0)
     io-console (0.5.11)
@@ -95,6 +101,9 @@ GEM
     mini_mime (1.1.2)
     minitest (5.15.0)
     msgpack (1.4.4)
+    net-http (0.2.0)
+      net-protocol
+      uri
     net-imap (0.2.3)
       digest
       net-protocol
@@ -113,6 +122,10 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.13.1-x86_64-linux)
       racc (~> 1.4)
+    pry (0.14.1)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    public_suffix (4.0.6)
     puma (5.6.1)
       nio4r (~> 2.0)
     racc (1.6.0)
@@ -148,6 +161,7 @@ GEM
     rake (13.0.6)
     reline (0.3.1)
       io-console (~> 0.5)
+    rexml (3.2.5)
     rspec-core (3.10.2)
       rspec-support (~> 3.10.0)
     rspec-expectations (3.10.2)
@@ -171,6 +185,11 @@ GEM
     timeout (0.2.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
+    uri (0.11.0)
+    webmock (3.14.0)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -182,11 +201,14 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   debug
+  net-http
+  pry
   puma (~> 5.0)
   rails (~> 7.0.1)
   rspec-rails
   sqlite3 (~> 1.4)
   tzinfo-data
+  webmock
 
 RUBY VERSION
    ruby 3.1.0p0
