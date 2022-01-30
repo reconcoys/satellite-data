@@ -1,0 +1,2 @@
+class SatelliteEntry < ApplicationRecord
+end
