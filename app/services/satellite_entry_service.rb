@@ -1,4 +1,19 @@
 module SatelliteEntryService
+  RECENT_STATISTICS_WINDOW_MINUTES = 5
+  HEALTH_WINDOW_SECONDS = 60
+  AVERAGE_ALTITUDE_THRESHOLD = 160
+
+  module HEALTH_RESPONSE
+    FAILURE = "WARNING: RAPID ORBITAL DECAY IMMINENT"
+    RESUMED = "Sustained Low Earth Orbit Resumed"
+    OK = "Altitude is A-OK"
+    NOT_ENOUGH_DATA = "Not Enough Data"
+  end
+
+  module STATISTICS_RESPONSE
+    NO_DATA = "No Data"
+  end
+
   def self.create!(altitude, last_updated)
     altitudes = SatelliteEntry.all.map(&:altitude).push(altitude)
     average_altitude = altitudes.sum / altitudes.length
@@ -12,10 +27,10 @@ module SatelliteEntryService
 
   def self.recent_statistics
     recent_altitudes = SatelliteEntry
-      .where(:data_updated_at => 5.minutes.ago..)
+      .where("data_updated_at >= ?", RECENT_STATISTICS_WINDOW_MINUTES.minutes.ago)
       .pluck(:altitude)
 
-    return "no data" if recent_altitudes.none?
+    return STATISTICS_RESPONSE::NO_DATA if recent_altitudes.none?
 
     {
       :minimum => recent_altitudes.min,
@@ -25,29 +40,29 @@ module SatelliteEntryService
   end
 
   def self.health
-    first_entry_older_than_a_minute_timestamp = SatelliteEntry
-      .where("data_updated_at < ?", 60.seconds.ago)
+    first_entry_of_window_timestamp = SatelliteEntry
+      .where("data_updated_at < ?", HEALTH_WINDOW_SECONDS.seconds.ago)
       .order(:data_updated_at => :desc)
       .pluck(:data_updated_at)
       .first
 
-    return "Not enough data" unless first_entry_older_than_a_minute_timestamp
+    return HEALTH_RESPONSE::NOT_ENOUGH_DATA unless first_entry_of_window_timestamp
 
     entries_in_window = SatelliteEntry
-      .where("data_updated_at >= ?", first_entry_older_than_a_minute_timestamp)
+      .where("data_updated_at >= ?", first_entry_of_window_timestamp)
 
     last_entry_below_threshold_in_window_timestamp = entries_in_window
-      .where("average_altitude < ?", 160)
+      .where("average_altitude < ?", AVERAGE_ALTITUDE_THRESHOLD)
       .order(:data_updated_at => :desc)
       .pluck(:data_updated_at)
       .first
 
-    if entries_in_window.all? { |entry| entry.average_altitude < 160 }
-      "WARNING: RAPID ORBITAL DECAY IMMINENT"
-    elsif last_entry_below_threshold_in_window_timestamp&.after?(1.minute.ago)
-      "Sustained Low Earth Orbit Resumed"
+    if entries_in_window.all? { |entry| entry.average_altitude < AVERAGE_ALTITUDE_THRESHOLD }
+      HEALTH_RESPONSE::FAILURE
+    elsif last_entry_below_threshold_in_window_timestamp&.after?(HEALTH_WINDOW_SECONDS.seconds.ago)
+      HEALTH_RESPONSE::RESUMED
     else
-      "Altitude is A-OK"
+      HEALTH_RESPONSE::OK
     end
   end
 end

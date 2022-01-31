@@ -87,7 +87,7 @@ describe SatelliteEntryService do
       let(:updated_at) { Time.zone.now - 5.minutes }
 
       it "returns a message indicating there is no data" do
-        expect(subject).to eq("no data")
+        expect(subject).to eq(described_class::STATISTICS_RESPONSE::NO_DATA)
       end
     end
   end
@@ -102,7 +102,7 @@ describe SatelliteEntryService do
       end
 
       it "returns the expected message" do
-        expect(subject).to eq("Not enough data")
+        expect(subject).to eq(described_class::HEALTH_RESPONSE::NOT_ENOUGH_DATA)
       end
     end
 
@@ -115,7 +115,7 @@ describe SatelliteEntryService do
       end
 
       it "returns the expected message" do
-        expect(subject).to eq("WARNING: RAPID ORBITAL DECAY IMMINENT")
+        expect(subject).to eq(described_class::HEALTH_RESPONSE::FAILURE)
       end
     end
 
@@ -128,7 +128,7 @@ describe SatelliteEntryService do
       end
 
       it "returns the expected message" do
-        expect(subject).to eq("Sustained Low Earth Orbit Resumed")
+        expect(subject).to eq(described_class::HEALTH_RESPONSE::RESUMED)
       end
     end
 
@@ -141,7 +141,7 @@ describe SatelliteEntryService do
       end
 
       it "returns the expected message" do
-        expect(subject).to eq("Altitude is A-OK")
+        expect(subject).to eq(described_class::HEALTH_RESPONSE::OK)
       end
     end
   end
