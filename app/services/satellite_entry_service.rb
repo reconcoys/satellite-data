@@ -9,4 +9,18 @@ module SatelliteEntryService
       :average_altitude => average_altitude
     )
   end
+
+  def self.recent_statistics
+    recent_altitudes = SatelliteEntry
+      .where(:data_updated_at => 5.minutes.ago..)
+      .pluck(:altitude)
+
+    return "no data" if recent_altitudes.none?
+
+    {
+      :minimum => recent_altitudes.min,
+      :maximum => recent_altitudes.max,
+      :average => recent_altitudes.sum / recent_altitudes.length
+    }
+  end
 end
