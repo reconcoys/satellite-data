@@ -1,5 +1,5 @@
 class HealthController < ApplicationController
   def index
-    render :json => SatelliteEntryService.health
+    render :plain => SatelliteEntryService.health
   end
 end
