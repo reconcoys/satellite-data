@@ -91,4 +91,58 @@ describe SatelliteEntryService do
       end
     end
   end
+
+
+  describe ".health" do
+    subject { SatelliteEntryService.health }
+
+    context "when there is no data older than a minute" do
+      before do
+        SatelliteEntry.create!(:data_updated_at => 59.seconds.ago, :average_altitude => 159.9)
+      end
+
+      it "returns the expected message" do
+        expect(subject).to eq("Not enough data")
+      end
+    end
+
+    context "when the average altitude has been less than 160 for over a minute" do
+      before do
+        SatelliteEntry.create!(:data_updated_at => 66.seconds.ago, :average_altitude => 160.0)
+        SatelliteEntry.create!(:data_updated_at => 61.seconds.ago, :average_altitude => 159.9)
+        SatelliteEntry.create!(:data_updated_at => 30.seconds.ago, :average_altitude => 159.9)
+        SatelliteEntry.create!(:data_updated_at => 15.seconds.ago, :average_altitude => 159.9)
+      end
+
+      it "returns the expected message" do
+        expect(subject).to eq("WARNING: RAPID ORBITAL DECAY IMMINENT")
+      end
+    end
+
+    context "when the average altitude has been 160 or more for less than a minute" do
+      before do
+        SatelliteEntry.create!(:data_updated_at => 66.seconds.ago, :average_altitude => 159.9)
+        SatelliteEntry.create!(:data_updated_at => 55.seconds.ago, :average_altitude => 159.9)
+        SatelliteEntry.create!(:data_updated_at => 30.seconds.ago, :average_altitude => 160.0)
+        SatelliteEntry.create!(:data_updated_at => 15.seconds.ago, :average_altitude => 160.0)
+      end
+
+      it "returns the expected message" do
+        expect(subject).to eq("Sustained Low Earth Orbit Resumed")
+      end
+    end
+
+    context "when the average altitude has been 160 or more for a minute" do
+      before do
+        SatelliteEntry.create!(:data_updated_at => 66.seconds.ago, :average_altitude => 159.9)
+        SatelliteEntry.create!(:data_updated_at => 61.seconds.ago, :average_altitude => 160.0)
+        SatelliteEntry.create!(:data_updated_at => 30.seconds.ago, :average_altitude => 160.0)
+        SatelliteEntry.create!(:data_updated_at => 15.seconds.ago, :average_altitude => 160.0)
+      end
+
+      it "returns the expected message" do
+        expect(subject).to eq("Altitude is A-OK")
+      end
+    end
+  end
 end
