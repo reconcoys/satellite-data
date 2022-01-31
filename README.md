@@ -32,3 +32,4 @@ rspec
 - Add scopes to SatelliteEntry to make the ActiveRecord queries more readable
 - Make satellite data URL injectable via environment variables
 - Handle and test error cases for calling satellite data url and parsing the response
+- Revisit the satellite_entries table. It shold have an id as a primary key, and possibly an index on data_updated_at depending on expected load.
