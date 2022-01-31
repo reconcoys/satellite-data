@@ -2,24 +2,33 @@
 
 ## Setup
 
-Ensure you have Ruby 3.1.0 installed
+Run `./start-docker.sh` to run inside a Docker container with everything installed already, then run the commands below.
 
-```
-bundle install
-```
+OR
 
-## Run tests
+Ensure you have `Ruby 3.1.0` installed and run `bundle install`, then run the commands below.
+
+
+## Running
+
+### Run Tests
 
 ```
 rspec
 ```
 
-## Run server
+### Start Server
 
 ```
 ./start-server.sh
 ```
 
-Endpoints:
+## Endpoints
 - http://localhost:3000/stats
 - http://localhost:3000/health
+
+## Todo
+- Use https://github.com/travisjeffery/timecop for all specs involving time
+- Add scopes to SatelliteEntry to make the ActiveRecord queries more readable
+- Make satellite data URL injectable via environment variables
+- Handle and test error cases for calling satellite data url and parsing the response
